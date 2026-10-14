@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kalis Gestion</title>
+<meta name="description" content="Kalis Gestion, progiciel de gestion commerciale multi-clients sur Jakarta EE.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f5eff'/%3E%3Cpath d='M10 8v16M10 16l9-8M13 13.5L21 24' stroke='white' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="app">
+  <aside class="nav">
+    <div class="marque">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1f5eff"/><path d="M10 8v16M10 16l9-8M13 13.5L21 24" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+      <div><strong>Kalis</strong><span>Gestion commerciale</span></div>
+    </div>
+    <nav id="menu">
+      <a href="#chiffrage" data-vue="chiffrage"><svg viewBox="0 0 24 24"><path d="M7 3h10l4 4v14H7zM17 3v4h4M10 12h8M10 16h8"/></svg><span>Chiffrage</span></a>
+      <a href="#parametrage" data-vue="parametrage"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Paramétrage</span></a>
+      <a href="#reprise" data-vue="reprise"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></svg><span>Reprise de données</span></a>
+      <a href="#migration" data-vue="migration"><svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg><span>Migration Jakarta EE</span></a>
+      <a href="#plateforme" data-vue="plateforme"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg><span>Plateforme</span></a>
+    </nav>
+    <div class="pied-nav">
+      <div class="etat" id="etat-serveur"><i></i><span>Connexion au serveur</span></div>
+      <div class="version">Kalis 4.2.0, environnement de recette</div>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="barre">
+      <div class="selecteur">
+        <label for="instance">Instance client</label>
+        <select id="instance"></select>
+      </div>
+      <div class="infos-instance" id="infos-instance"></div>
+    </header>
+
+    <main id="contenu">
+
+      <!-- CHIFFRAGE -->
+      <section class="vue" data-vue="chiffrage">
+        <div class="titre-vue">
+          <div>
+            <h1>Chiffrage</h1>
+            <p>Le même panier passe par le cœur standard puis par les règles propres au client.</p>
+          </div>
+          <div class="bascule" id="mode-chiffrage" role="tablist">
+            <button class="actif" data-mode="avec">Avec spécifiques</button>
+            <button data-mode="sans">Cœur standard</button>
+          </div>
+        </div>
+        <div class="grille-chiffrage">
+          <div class="carte">
+            <div class="entete-carte"><h2>Catalogue</h2><button class="lien" id="vider-panier">Vider</button></div>
+            <div id="catalogue" class="catalogue"></div>
+          </div>
+          <div class="colonne">
+            <div class="carte piece" id="piece"></div>
+            <div class="carte">
+              <div class="entete-carte"><h2>Règles exécutées</h2><span class="discret" id="nb-regles"></span></div>
+              <ol class="regles" id="regles"></ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PARAMETRAGE -->
+      <section class="vue" data-vue="parametrage" hidden>
+        <div class="titre-vue">
+          <div>
+            <h1>Paramétrage</h1>
+            <p>Chaque règle expose ses réglages. Une valeur enregistrée vaut pour ce client seulement.</p>
+          </div>
+          <div class="resume-panier" id="resume-panier"></div>
+        </div>
+        <div class="grille-param">
+          <div id="parametres" class="cartes-param"></div>
+          <div class="carte journal">
+            <div class="entete-carte"><h2>Journal de l'instance</h2><button class="lien" id="reinitialiser">Revenir à l'état de recette</button></div>
+            <ul id="journal"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- REPRISE -->
+      <section class="vue" data-vue="reprise" hidden>
+        <div class="titre-vue">
+          <div>
+            <h1>Reprise de données</h1>
+            <p>Articles exportés de l'ancien logiciel du client : contrôle ligne par ligne avant intégration.</p>
+          </div>
+        </div>
+        <div class="grille-reprise">
+          <div class="carte">
+            <div class="entete-carte">
+              <h2>Fichier source</h2>
+              <label class="bouton secondaire petit"><input type="file" id="fichier" accept=".csv,.txt,text/csv" hidden>Charger un .csv</label>
+            </div>
+            <p class="aide">Colonnes : code ; libellé ; famille ; unité ; prix HT ; taux de TVA. Point-virgule ou tabulation, décimales à la virgule ou au point.</p>
+            <textarea id="csv" spellcheck="false" class="code"></textarea>
+            <div class="actions">
+              <button class="bouton" id="controler">Contrôler</button>
+              <button class="bouton principal-btn" id="integrer" disabled>Intégrer les lignes valides</button>
+            </div>
+          </div>
+          <div class="carte">
+            <div class="entete-carte"><h2>Rapport de contrôle</h2><span class="discret" id="etat-reprise"></span></div>
+            <div class="compteurs" id="compteurs"></div>
+            <div class="table-defile"><table class="table" id="rapport"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MIGRATION -->
+      <section class="vue" data-vue="migration" hidden>
+        <div class="titre-vue">
+          <div>
+            <h1>Migration Java EE 8 vers Jakarta EE 10</h1>
+            <p>javax devient jakarta, sauf les paquets du JDK. Descripteurs XML et dépendances Maven suivent.</p>
+          </div>
+        </div>
+        <div class="exemples" id="exemples"></div>
+        <div class="grille-migration">
+          <div class="carte">
+            <div class="entete-carte"><h2>Source Java EE 8</h2><input id="nom-fichier" class="champ-nom" aria-label="Nom du fichier"></div>
+            <textarea id="source" spellcheck="false" class="code haute"></textarea>
+            <div class="actions"><button class="bouton principal-btn" id="convertir">Convertir</button></div>
+          </div>
+          <div class="carte">
+            <div class="entete-carte"><h2>Résultat Jakarta EE 10</h2><button class="lien" id="copier">Copier</button></div>
+            <pre class="code haute rendu" id="resultat"></pre>
+          </div>
+        </div>
+        <div class="grille-migration bas">
+          <div class="carte"><div class="entete-carte"><h2>Modifications</h2><span class="discret" id="nb-modifs"></span></div><ul class="liste" id="modifications"></ul></div>
+          <div class="carte"><div class="entete-carte"><h2>Points d'attention</h2><span class="discret" id="nb-alertes"></span></div><ul class="liste" id="alertes"></ul></div>
+        </div>
+      </section>
+
+      <!-- PLATEFORME -->
+      <section class="vue" data-vue="plateforme" hidden>
+        <div class="titre-vue">
+          <div>
+            <h1>Plateforme</h1>
+            <p>Lu à l'instant sur le serveur qui exécute cette instance.</p>
+          </div>
+          <button class="bouton secondaire" id="rafraichir">Actualiser</button>
+        </div>
+        <div class="tuiles" id="tuiles"></div>
+        <div class="grille-migration bas">
+          <div class="carte"><div class="entete-carte"><h2>Règles chargées par CDI</h2><span class="discret" id="nb-cdi"></span></div><div class="table-defile"><table class="table" id="table-regles"></table></div></div>
+          <div class="carte"><div class="entete-carte"><h2>Points d'entrée REST</h2></div><ul class="liste mono" id="api"></ul></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body>
+</html>
